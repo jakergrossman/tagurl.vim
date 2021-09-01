@@ -141,7 +141,7 @@ command! -nargs=* TagURL call tagurl#tagurl(<f-args>)
 
 " Define mapping, if enabled
 if g:tagurl_enable_mapping == v:true
-    exec 'nnoremap ' . g:tagurl_map . ':exec "TagURL " . expand("<cword>")<CR>'
+    exec 'nnoremap ' . g:tagurl_map . ' :exec "TagURL " . expand("<cword>")<CR>'
 endif
 
 " restore vim compatibility options
