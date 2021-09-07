@@ -3,6 +3,19 @@ if exists('g:loaded_tagurl')
 endif
 let g:loaded_tagurl=1
 
+" returns a list of buffer #s
+" that have a 'help' buftype and
+" whether or not they are loaded
+function! s:poll_buffers() abort
+    let l:ret = []
+    for b in getbufinfo()
+        if getbufvar(b.bufnr, '&buftype') ==? 'help'
+            let l:ret += [[b.bufnr, b.loaded]]
+        endif
+    endfor
+    return l:ret
+endfunction
+
 " Escape text for use in a URL
 function! s:url_escape(text) abort
     " it is important that % is first
@@ -55,10 +68,21 @@ endfunction
 " page is pulled up for that tag, it will
 " copy the vimhelp.org URL for that tag
 " to the clipboard
-" TODO: Is it possible not to obliterate an open help page?
 function! tagurl#tagurl(tag, ...) abort
     " open help for tag
     try
+        let l:help_bufs = s:poll_buffers()
+        let l:old_buf = -1
+        if len(l:help_bufs) != 0
+            for buf in l:help_bufs
+                if buf[1] == 1
+                    " there's an open help window
+                    let l:old_buf = buf[0]
+                    break
+                endif
+            endfor
+        endif
+
         exec 'silent help ' . a:tag
 
         " no error, found tag
@@ -76,7 +100,11 @@ function! tagurl#tagurl(tag, ...) abort
         let help_file=expand('%:t')
 
         " close opened help page
-        helpclose
+        if l:old_buf > 0
+            silent exec "buffer " . l:old_buf
+        else
+            helpclose
+        endif
 
         " construct URL
         let URL = 'https://vimhelp.org/' . help_file . '.html#' . tag_text
