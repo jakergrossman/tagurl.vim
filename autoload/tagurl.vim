@@ -1,7 +1,12 @@
+" tagurl.vim
+" Author:      Jake Grossman <jake.r.grossman@gmail.com>
+" Last Change: September 6, 2021
+" License:     MIT (See LICENSE.txt)
+
 if exists('g:loaded_tagurl')
-    " finish
+    finish
 endif
-let g:loaded_tagurl=1
+let g:loaded_tagurl = 1
 
 " returns a list of buffer #s
 " that have a 'help' buftype and
@@ -10,7 +15,7 @@ function! s:poll_buffers() abort
     let l:ret = []
     for b in getbufinfo()
         if getbufvar(b.bufnr, '&buftype') ==? 'help'
-            let l:ret += [[b.bufnr, b.loaded]]
+            let l:ret += [[b.bufnr,b.loaded]]
         endif
     endfor
     return l:ret
@@ -94,10 +99,10 @@ function! tagurl#tagurl(tag, ...) abort
         let tag_text = expand('<cword>')
 
         " escape for use in URL
-        let tag_text=s:url_escape(tag_text)
+        let tag_text = s:url_escape(tag_text)
 
         " get name of help file
-        let help_file=expand('%:t')
+        let help_file = expand('%:t')
 
         " close opened help page
         if l:old_buf > 0
@@ -114,7 +119,7 @@ function! tagurl#tagurl(tag, ...) abort
             echohl ErrorMsg
 
             " remove "Vim(help):" prefix
-            unsilent echomsg substitute(v:exception, '^Vim(help):', '', '')
+            unsilent echom substitute(v:exception, '^Vim(help):', '', '')
 
             " reset
             echohl None
