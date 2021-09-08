@@ -97,10 +97,14 @@ function! tagurl#tagurl(tag, ...) abort
         " get name of help file
         let help_file = expand('%:t')
 
-        " close opened help page
         if l:old_buf > 0
+            " go back to previous help page
             silent exec 'buffer ' . l:old_buf
+
+            " go back to previous window
+            wincmd p
         else
+            " close opened help page
             helpclose
         endif
 
