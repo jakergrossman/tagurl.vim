@@ -8,17 +8,20 @@ if exists('g:loaded_tagurl')
 endif
 let g:loaded_tagurl = 1
 
-" returns a list of buffer #s
-" that have a 'help' buftype and
-" whether or not they are loaded
+" returns the buffer # of the first
+" found buffer that has a 'help' ft,
+" is loaded, and is not hidden
+"
+" if no buffer is found, return -1
 function! s:poll_buffers() abort
-    let l:ret = []
     for b in getbufinfo()
         if getbufvar(b.bufnr, '&buftype') ==? 'help'
-            let l:ret += [[b.bufnr,b.loaded]]
+            if b.loaded && !b.hidden
+                return b.bufnr
+            endif
         endif
     endfor
-    return l:ret
+    return -1
 endfunction
 
 " Escape text for use in a URL
@@ -76,17 +79,7 @@ endfunction
 function! tagurl#tagurl(tag, ...) abort
     " open help for tag
     try
-        let l:help_bufs = s:poll_buffers()
-        let l:old_buf = -1
-        if len(l:help_bufs) != 0
-            for buf in l:help_bufs
-                if buf[1] == 1
-                    " there's an open help window
-                    let l:old_buf = buf[0]
-                    break
-                endif
-            endfor
-        endif
+        let l:old_buf = s:poll_buffers()
 
         silent exec 'help ' . a:tag
 
