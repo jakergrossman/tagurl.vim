@@ -88,7 +88,7 @@ function! tagurl#tagurl(tag, ...) abort
             endfor
         endif
 
-        exec 'silent help ' . a:tag
+        silent exec 'help ' . a:tag
 
         " no error, found tag
         "
