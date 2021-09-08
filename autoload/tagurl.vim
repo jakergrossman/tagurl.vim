@@ -106,7 +106,7 @@ function! tagurl#tagurl(tag, ...) abort
 
         " close opened help page
         if l:old_buf > 0
-            silent exec "buffer " . l:old_buf
+            silent exec 'buffer ' . l:old_buf
         else
             helpclose
         endif
@@ -118,7 +118,7 @@ function! tagurl#tagurl(tag, ...) abort
             " 'Error' message on single line
             echohl ErrorMsg
 
-            " remove "Vim(help):" prefix
+            " remove 'Vim(help):' prefix
             unsilent echom substitute(v:exception, '^Vim(help):', '', '')
 
             " reset
