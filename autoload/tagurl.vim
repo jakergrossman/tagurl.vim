@@ -1,6 +1,6 @@
 " tagurl.vim
 " Author:      Jake Grossman <jake.r.grossman@gmail.com>
-" Last Change: September 6, 2021
+" Last Change: September 8, 2021
 " License:     MIT (See LICENSE.txt)
 
 if exists('g:loaded_tagurl')
@@ -80,6 +80,7 @@ function! tagurl#tagurl(tag, ...) abort
     " open help for tag
     try
         let l:old_buf = s:poll_buffers()
+        let l:cur_pos = getcursorcharpos() " save current position
 
         silent exec 'help ' . a:tag
 
@@ -98,11 +99,17 @@ function! tagurl#tagurl(tag, ...) abort
         let help_file = expand('%:t')
 
         if l:old_buf > 0
-            " go back to previous help page
-            silent exec 'buffer ' . l:old_buf
-
-            " go back to previous window
-            wincmd p
+            if l:old_buf == bufnr()
+                " started in same help window, just move
+                " to original position
+                call setpos('.', l:cur_pos)
+            else
+                " started somewhere else, go back
+                " to previous help page and go
+                " back to previous window
+                silent exec 'buffer ' . l:old_buf
+                wincmd p
+            endif
         else
             " close opened help page
             helpclose
