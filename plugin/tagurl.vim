@@ -1,7 +1,7 @@
 " tagurl.vim
 " Author:      Jake Grossman <jake.r.grossman@gmail.com>
 " Last Change: September 6, 2021
-" License:     MIT (See LICENSE.txt)
+" License:     Unlicense (See LICENSE.txt)
 
 " save vi compatibility options
 let s:cpo_save = &cpo

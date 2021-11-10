@@ -1,7 +1,7 @@
 " tagurl.vim
 " Author:      Jake Grossman <jake.r.grossman@gmail.com>
 " Last Change: September 8, 2021
-" License:     MIT (See LICENSE.txt)
+" License:     Unlicense (See LICENSE.txt)
 
 if exists('g:loaded_tagurl')
     finish
