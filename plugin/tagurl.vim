@@ -1,6 +1,6 @@
 " tagurl.vim
 " Author:      Jake Grossman <jake.r.grossman@gmail.com>
-" Last Change: September 6, 2021
+" Last Change: November 10, 2021
 " License:     Unlicense (See LICENSE.txt)
 
 " save vi compatibility options

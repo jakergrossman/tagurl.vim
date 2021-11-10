@@ -1,6 +1,6 @@
 " tagurl.vim
 " Author:      Jake Grossman <jake.r.grossman@gmail.com>
-" Last Change: September 8, 2021
+" Last Change: November 10, 2021
 " License:     Unlicense (See LICENSE.txt)
 
 if exists('g:loaded_tagurl')
@@ -73,14 +73,14 @@ endfunction
 " Corresponding function for :TagURL command
 "
 " Takes a potential tag as input. If a help
-" page is pulled up for that tag, it will
-" copy the vimhelp.org URL for that tag
-" to the clipboard
+" page is found for that tag, it will
+" construct a vimhelp.org URL for that tag
+" and copy it to the destination register
 function! tagurl#tagurl(tag, ...) abort
     " open help for tag
     try
         let l:old_buf = s:poll_buffers()
-        let l:cur_pos = getcursorcharpos() " save current position
+        let l:cur_pos = getcurpos() " save current position
 
         silent exec 'help ' . a:tag
 
@@ -132,8 +132,6 @@ function! tagurl#tagurl(tag, ...) abort
         return
     endtry
 
-    " only update clipboard for a successful search
-
     " register specified?
     if a:0 > 0
         let reg = '@' . a:1
@@ -141,9 +139,17 @@ function! tagurl#tagurl(tag, ...) abort
         let reg = '@' . g:tagurl_default_reg
     endif
 
-    exec 'let ' . reg . '="' . URL . '"'
-
-    if g:tagurl_verbose == v:true
-        echom 'Copied ' . URL . ' to ' . reg
+    if !has('clipboard') && reg =~? '@[*+]'
+        echohl ErrorMsg
+        echomsg 'Your version of Vim does not support copying to the clipboard, specify a register: TagURL <help> <register>'
+        echohl None
+    else
+        exec 'let ' . reg . '="' . URL . '"'
+        if g:tagurl_verbose == v:true
+            echom 'Copied ' . URL . ' to ' . reg
+        endif
     endif
+
+
+
 endfunction
