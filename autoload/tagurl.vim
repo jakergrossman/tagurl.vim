@@ -1,6 +1,6 @@
 " tagurl.vim
 " Author:      Jake Grossman <jake.r.grossman@gmail.com>
-" Last Change: November 10, 2021
+" Last Change: July 14, 2022
 " License:     Unlicense (See LICENSE.txt)
 
 if exists('g:loaded_tagurl')
@@ -8,20 +8,16 @@ if exists('g:loaded_tagurl')
 endif
 let g:loaded_tagurl = 1
 
-" returns the buffer # of the first
-" found buffer that has a 'help' ft,
-" is loaded, and is not hidden
-"
-" if no buffer is found, return -1
-function! s:poll_buffers() abort
-    for b in getbufinfo()
-        if getbufvar(b.bufnr, '&buftype') ==? 'help'
-            if b.loaded && !b.hidden
-                return b.bufnr
-            endif
-        endif
-    endfor
-    return -1
+function! s:echo_verbose(msg) abort
+    if g:tagurl_verbose == v:true
+        unsilent echomsg a:msg
+    endif
+endfunction
+
+function! s:echo_err(msg) abort
+    echohl ErrorMsg
+    echomsg a:msg
+    echohl None
 endfunction
 
 " Escape text for use in a URL
@@ -79,58 +75,36 @@ endfunction
 function! tagurl#tagurl(tag, ...) abort
     " open help for tag
     try
-        let l:old_buf = s:poll_buffers()
-        let l:cur_pos = getcurpos() " save current position
-
-        silent exec 'help ' . a:tag
-
-        " no error, found tag
-        "
-        " found tag may differ, so make
-        " sure to use <cword>
-        "
-        " e.g. ':h command' will go to ':command'
-        let tag_text = expand('<cword>')
-
-        " escape for use in URL
-        let tag_text = s:url_escape(tag_text)
-
-        " get name of help file
-        let help_file = expand('%:t')
-
-        if l:old_buf > 0
-            if l:old_buf == bufnr()
-                " started in same help window, just move
-                " to original position
-                call setpos('.', l:cur_pos)
-            else
-                " started somewhere else, go back
-                " to previous help page and go
-                " back to previous window
-                silent exec 'buffer ' . l:old_buf
-                wincmd p
-            endif
-        else
-            " close opened help page
-            helpclose
-        endif
-
-        " construct URL
-        let URL = 'https://vimhelp.org/' . help_file . '.html#' . tag_text
+        " open new help buffer and force buftype
+        " so help opens in that buf
+        exec 'vsplit | enew | set buftype=help | help ' . a:tag
     catch
-        if g:tagurl_verbose == v:true
-            " 'Error' message on single line
-            echohl ErrorMsg
+        " error! close opened help
+        helpclose
 
-            " remove 'Vim(help):' prefix
-            unsilent echom substitute(v:exception, '^Vim(help):', '', '')
-
-            " reset
-            echohl None
-        endif
+        call s:echo_err(substitute(v:exception, '^Vim(help):', '', ''))
 
         return
     endtry
+
+    " no error, found tag
+    "
+    " found tag may differ, so make
+    " sure to use <cword>
+    "
+    " e.g. ':h command' will go to ':command'
+    let tag_text = expand('<cword>')
+
+    " escape for use in URL
+    let tag_text = s:url_escape(tag_text)
+
+    " get name of help file
+    let help_file = expand('%:t')
+
+    helpclose
+
+    " construct URL
+    let URL = 'https://vimhelp.org/' . help_file . '.html#' . tag_text
 
     " register specified?
     if a:0 > 0
@@ -140,16 +114,9 @@ function! tagurl#tagurl(tag, ...) abort
     endif
 
     if !has('clipboard') && reg =~? '@[*+]'
-        echohl ErrorMsg
-        echomsg 'Your version of Vim does not support copying to the clipboard, specify a register: TagURL <help> <register>'
-        echohl None
+        call s:echo_err('Your version of Vim does not support copying to the clipboard, specify a register: TagURL <tag> <register>')
     else
         exec 'let ' . reg . '="' . URL . '"'
-        if g:tagurl_verbose == v:true
-            echom 'Copied ' . URL . ' to ' . reg
-        endif
+        call s:echo_verbose('Copied ' . URL . ' to ' . reg)
     endif
-
-
-
 endfunction
