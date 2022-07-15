@@ -1,6 +1,6 @@
 " tagurl.vim
 " Author:      Jake Grossman <jake.r.grossman@gmail.com>
-" Last Change: November 10, 2021
+" Last Change: July 15, 2022
 " License:     Unlicense (See LICENSE.txt)
 
 " save vi compatibility options
@@ -13,6 +13,7 @@ let s:def_options = [
    \['g:tagurl_enable_mapping',  v:true],
    \['g:tagurl_default_reg',     '+'],
    \['g:tagurl_verbose',         v:true],
+   \['g:tagurl_neovim',          v:false],
 \]
 
 for opt in s:def_options

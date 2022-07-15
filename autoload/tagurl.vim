@@ -1,6 +1,6 @@
 " tagurl.vim
 " Author:      Jake Grossman <jake.r.grossman@gmail.com>
-" Last Change: July 14, 2022
+" Last Change: July 15, 2022
 " License:     Unlicense (See LICENSE.txt)
 
 if exists('g:loaded_tagurl')
@@ -66,6 +66,16 @@ function! s:url_escape(text) abort
     return escaped_text
 endfunction
 
+function! s:gen_url(help_file, tag_text)
+    if g:tagurl_neovim
+        let URL = 'https://neovim.io/doc/user/' . substitute(a:help_file, '\.txt$', '', '') . '.html#' . a:tag_text
+    else
+        let URL = 'https://vimhelp.org/' . a:help_file . '.html#' . a:tag_text
+    endif
+
+    return URL
+endfunction
+
 " Corresponding function for :TagURL command
 "
 " Takes a potential tag as input. If a help
@@ -104,7 +114,7 @@ function! tagurl#tagurl(tag, ...) abort
     helpclose
 
     " construct URL
-    let URL = 'https://vimhelp.org/' . help_file . '.html#' . tag_text
+    let URL = s:gen_url(help_file, tag_text)
 
     " register specified?
     if a:0 > 0

@@ -1,6 +1,6 @@
 # tagurl.vim
-Copy the URL for a help tag on [vimhelp.org](https://www.vimhelp.org) to the
-clipboard
+Copy the URL for a help tag on [vimhelp.org](https://www.vimhelp.org) or [neovim.io](https://neovim.io/doc/user/)
+to the clipboard
 
 ## Overview
 I created this simple plugin because I was posting a lot on the Vi and Vim Stack
@@ -33,9 +33,10 @@ mapping.
 - `g:tagurl_map`            - The normal mode mapping to use for tagurl.vim
 - `g:tagurl_enable_mapping` - Whether or not to set the `:TagURL`  mapping
 - `g:tagurl_default_reg`    - The register to copy to if none is specified
-- `g:tagurl_verbose`        - Whether or not `:TagURL` will echo a message. This 
-                              applies to both successful and failed calls, so 
-                              setting this to `v:false` will also silence errors
+- `g:tagurl_verbose`        - Whether or not `:TagURL` will echo status messages.
+- `g:tagurl_neovim`         - Whether to use `neovim.io` instead of `vimhelp.org`.
+                              This is required when linking NeoVim specific help documents,
+                              e.g.: LSP
 
 ---
 
@@ -46,6 +47,7 @@ The help tag URL for vimhelp.org is structured as follows:
 
 where `<helpfile>` is the name of the help file the tag is in (options.txt,
 movement.txt, etc.), and `<tag>` is the tag itself escaped for use in a URL.
+The format for neovim.io is similar.
 
 tagurl.vim also exposes a `tagurl#tagurl(tag,...)` function, which actually performs
 the work for `:TagURL` in Command-line mode. It takes the same arguments as
